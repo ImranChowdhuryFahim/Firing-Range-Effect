@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/addnew.css">
+    <title>Firing Range Efficience - Add New Entery</title>
+    <script src="https://kit.fontawesome.com/c57ecf9603.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="pic">
+            pic
+        </div>
+        <div class="heading">
+            Add New Entry
+        </div>
+        <div class="icons">
+            <div class="settings">
+                <a href=""><i class="fa-solid fa-gear"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="body">
+        <div class="navbar">
+            <a class="nav-content active" href="/dashboard">Dashboard</a>
+            <br>
+            <a class="nav-content" href="/add_new_entry">Add New Entry</a>
+            <a class="nav-content" href="/upload_image">Upload Image</a>
+            <a class="nav-content" href="/show_record">Show Record</a>
+            <a class="nav-content" href="/calculate_grouping">Calculate Grouping</a>
+            <a class="nav-content" href="/analysis_error">Analysis Error</a>
+            <a class="nav-content" href="/report">Report</a>
+            <br>
+            <a class="nav-content signout" href="/signout">Sign Out</a>
+        </div>
+        <div class="content">
+            <form action="/add_new_entry" method="post">
+                <div class="inputgroup">
+                    <div class="label">
+                        No
+                    </div>
+                    <input type="text" name="soinik_number" placeholder="" required>
+                </div>
+                <div class="inputgroup">
+                    <div class="label">
+                        Rank
+                    </div>
+                    <input type="text" name="rank" placeholder="" required>
+                </div>
+                <div class="inputgroup">
+                    <div class="label">
+                        Name
+                    </div>
+                    <input type="text" name="name" placeholder="" required>
+                </div>
+                <div class="inputgroup">
+                    <div class="label">
+                        Company
+                    </div>
+                    <input type="text" name="company" placeholder="" required>
+                </div>
+                <button type="submit"> Save</button>
+                <div style="margin-top: 50px;">
+                    <span  style="color: red; text-align: center;margin-left: 50px;">{{ msg }}</span>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="footer">
+
+    </div>
+
+</body>
+
+</html>
