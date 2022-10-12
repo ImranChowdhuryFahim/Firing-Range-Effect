@@ -21,7 +21,7 @@
         </div>
         <div class="icons">
             <div class="settings">
-                <a href=""><i class="fa-solid fa-gear"></i></a>
+                <a class="nav-content" href="/profile">Profile</a>
             </div>
         </div>
     </div>
@@ -31,13 +31,14 @@
             <a class="nav-content active" href="/dashboard">Dashboard</a>
             <br>
             <a class="nav-content" href="/add_new_entry">Add New Entry</a>
-            <a class="nav-content" href="/upload_image">Upload Image</a>
+            <a class="nav-content" href="/check_error">Check Error</a>
             <a class="nav-content" href="/show_record">Show Record</a>
             <a class="nav-content" href="/calculate_grouping">Calculate Grouping</a>
             <a class="nav-content" href="/analysis_error">Analysis Error</a>
             <a class="nav-content" href="/report">Report</a>
+            <a class="nav-content" href="/update_profile">Update Profile</a>
             <br>
-            <a class="nav-content signout" href="/signout">Sign Out</a>
+            <a class="nav-content signout" href="/logout">Logout</a>
         </div>
         <div class="content">
             <div class="table">
@@ -45,10 +46,10 @@
                <table>
                 {% for record in records %}
                 <tr>
-                    <th style="width: 50%;"> {{ record.date }} - {{ record.sub_label }}</th>
+                    <th style="width: 50%;"> {{ record.date.strftime('%Y/%m/%d') }} - {{ record.sub_label }}</th>
                 </tr>
                 <tr>
-                    <td> <img height="200px" width="200px" src="{{ url_for('display_image',soinik_number=record.soinik_number,date=record.date.replace('/','-'),file_name=record.file_name) }}" >
+                    <td> <img height="200px" width="200px" src="{{ url_for('display_image',soinik_number=record.soinik_number,date=record.date.strftime('%Y-%m-%d'),file_name=record.file_name) }}" >
                         </td>
                 </tr>
                 {% endfor %}

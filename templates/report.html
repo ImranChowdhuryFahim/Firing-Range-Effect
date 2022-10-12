@@ -21,23 +21,24 @@
         </div>
         <div class="icons">
             <div class="settings">
-                <a href=""><i class="fa-solid fa-gear"></i></a>
+                <a class="nav-content" href="/profile">Profile</a>
             </div>
         </div>
     </div>
     <div class="body">
 
         <div class="navbar">
-            <a class="nav-content active" href="/dashboard">Dashboard</a>
+            <a class="nav-content " href="/dashboard">Dashboard</a>
             <br>
             <a class="nav-content" href="/add_new_entry">Add New Entry</a>
-            <a class="nav-content" href="/upload_image">Upload Image</a>
+            <a class="nav-content" href="/check_error">Check Error</a>
             <a class="nav-content" href="/show_record">Show Record</a>
             <a class="nav-content" href="/calculate_grouping">Calculate Grouping</a>
             <a class="nav-content" href="/analysis_error">Analysis Error</a>
-            <a class="nav-content" href="/report">Report</a>
+            <a class="nav-content active" href="/report">Report</a>
+            <a class="nav-content" href="/update_profile">Update Profile</a>
             <br>
-            <a class="nav-content signout" href="/signout">Sign Out</a>
+            <a class="nav-content signout" href="/logout">Logout</a>
         </div>
         <div class="content">
             <div class="table">
@@ -57,7 +58,6 @@
                         <td> {{ users[i].soinik_number }} </td>
                         <td> {{ users[i].rank }} </td>
                         <td> {{ users[i].name }} </td>
-                        <td> {{ users[i].best_grouping }} </td>
                         <td> {{ users[i].total_firing_count }} </td>
                         <td style="text-align: center;">  <a href="/show_report"><i class="fa fa-eye"></i> </a>
                         </td>
