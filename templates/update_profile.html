@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/check_error.css">
+    <link rel="stylesheet" href="static/css/update_profile.css">
     <title>Firing Range Efficience - Update Profile</title>
     <script src="https://kit.fontawesome.com/c57ecf9603.js" crossorigin="anonymous"></script>
 </head>
@@ -47,7 +47,7 @@
             <a class="nav-content signout" href="/logout">Logout</a>
             {% endif %}
         </div>
-        <div class="content">
+        <div class="content"  id="form">
             <form action="/update_profile" method="post" enctype="multipart/form-data">
                 <div class="inputgroup">
                     <div class="label">
@@ -81,12 +81,26 @@
                     <input type="file" name="file" required>
                 </div>
                 <button type="submit"> Update Profile</button>
-                <button type="submit"> Erase Record</button>
+                
                 <div style="margin-top: 50px;">
                     <span  style="color: red; text-align: center;margin-left: 50px;">{{ msg }}</span>
                 </div>
             </form>
+            {% if super_user==True %}
+            <form action="/erase_data" method="post" enctype="multipart/form-data">
+                
+                <div style="display: flex; flex-direction: row;">
+                    <div class="inputgroup">
+                        
+                        <input type="text" name="soinik_number" placeholder="No" required>
+                    </div>
+                
+                    <button style="margin-top: 15px; padding-left: 10px; padding-right: 10px;" type="submit"> Erase Data </button>
+                </div>
+                
 
+            </form>
+            {% endif %}
         </div>
     </div>
     <div class="footer">

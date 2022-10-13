@@ -99,7 +99,7 @@
     flex: 4;
 }
 
-.table table {
+.content {
     border-collapse: collapse;
     width: 90%;
     margin: 10px auto;
@@ -107,7 +107,6 @@
     background-color: rgb(207, 204, 204);
     height: 65vh;
     margin: auto;
-    margin-top: 10%;
     border-radius: 50px;
     box-shadow: 5px 5px 20px rgba(0, 0, 0, .5);
     display: flex;

@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 from tokenize import group
 from app import app, db
@@ -5,6 +6,7 @@ from load_model import predict
 from models import User, Record
 from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, session
+from sqlalchemy import select, update, delete, values
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,7 +25,7 @@ def login():
         password = request.form.get('Password')
 
         if id == 'super_admin' and password == '#admin':
-            session['super_user'] = "super_user"
+            session['super_user'] = {"name":"super_admin","rank":'snk',"unit":'abcd',"soinik_number":123456}
             return redirect(url_for('dashboard'))
         else:
             user = User.query.get(id)
@@ -150,6 +152,8 @@ def display_image(soinik_number, date, file_name):
     return redirect(url_for('static', filename='uploads/'+soinik_number+'/'+date+'/'+file_name), code=301)
 
 
+
+
 @app.route('/analysis_record', methods=['GET', 'POST'])
 def calculate_grouping():
     if 'super_user' in session:
@@ -179,6 +183,10 @@ def calculate_grouping():
             to = request.form.get('to')
             records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
                 Record.date) >= from_, db.func.date(Record.date) <= to).all()
+
+            vertical_count = 0
+            horizontal_count = 0
+            total_firing_count = len(records)
 
             for record in records:
                 if record.error == 'Vertical Error':
@@ -225,24 +233,102 @@ def analysis_error():
 
 
 
-@app.route('/update_profile')
+@app.route('/update_profile', methods=["GET", "POST"])
 def update_profile():
     if 'super_user' in session:
+        if request.method == 'POST':
+            soinik_number = request.form.get('soinik_number')
+            rank = request.form.get('rank')
+            name = request.form.get('name')
+            unit = request.form.get('unit')
+            image = request.files['file']
+            user = User.query.get(soinik_number)
+            if user == None:
+                return render_template('update_profile.html',super_user=True,msg="User doesn't exist")
 
-        return render_template('update_profile.html',super_user=True)
+            else:
+                dir_path = 'static/uploads/profile_photo'
+                dir_path = os.path.join(dir_path, soinik_number+'/')
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+                image_path = os.path.join(
+                    dir_path, image.filename)
+                image.save(image_path)
+                file_name = image.filename
+                user.rank = rank
+                user.name = name
+                user.unit = unit
+                user.photo = file_name
+                db.session.add(user)
+                db.session.commit()
+                return render_template('update_profile.html',super_user=True,msg="successfully updated profile")
+            
+        else:
+            return render_template('update_profile.html',super_user=True)
     elif 'user' in session:
-        return render_template('update_profile.html',super_user=False)
+        if request.method == 'POST':
+            soinik_number = request.form.get('soinik_number')
+            rank = request.form.get('rank')
+            name = request.form.get('name')
+            unit = request.form.get('unit')
+            image = request.files['file']
+            user = User.query.get(soinik_number)
+            if user == None:
+                return render_template('update_profile.html',super_user=False,msg="User doesn't exist")
+
+            else:
+                dir_path = 'static/uploads/profile_photo'
+                dir_path = os.path.join(dir_path, soinik_number+'/')
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+                image_path = os.path.join(
+                    dir_path, image.filename)
+                image.save(image_path)
+                file_name = image.filename
+                user.rank = rank
+                user.name = name
+                user.unit = unit
+                user.photo = file_name
+                db.session.add(user)
+                db.session.commit()
+                return render_template('update_profile.html',super_user=False,msg="successfully updated profile")
+        else:
+            return render_template('update_profile.html',super_user=False)
     else:
         return redirect(url_for('login'))
 
-
+@app.route('/display_picture/<soinik_number>/<file_name>')
+def display_picture(soinik_number,file_name):
+    print(soinik_number, file_name)
+    return redirect(url_for('static', filename='uploads/profile_photo/'+soinik_number+'/'+file_name), code=301)
 
 @app.route('/profile')
 def profile():
     if 'super_user' in session:
-        return render_template('profile.html')
+        return render_template('profile.html',super_user=True,user=session['super_user'])
+    elif 'user' in session:
+        user = User.query.get(session['user'])
+        return render_template('profile.html',super_user=False,user=user)
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/erase_data',methods=['POST'])
+def erase_date():
+    if 'super_user' in session:
+        if request.method == 'POST':
+            soinik_number = request.form.get('soinik_number')
+            sql1 = delete(User).where(User.soinik_number == soinik_number)
+            sql2 = delete(Record).where(Record.soinik_number == soinik_number)
+
+            db.session.execute(sql1)
+            db.session.commit()
+            db.session.execute(sql2)
+            db.session.commit()
+            return render_template('update_profile.html',super_user=False,msg="successfully deleted profile")
+    else:
+        return redirect(url_for('login'))
+
 
 
 @app.route('/logout')
