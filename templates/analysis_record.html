@@ -14,7 +14,7 @@
 
     <div class="header">
         <div class="pic">
-            pic
+            
         </div>
         <div class="heading">
             Claculate Grouping </div>
@@ -27,6 +27,7 @@
     <div class="body">
 
         <div class="navbar">
+            {% if super_user==True %}
             <a class="nav-content" href="/dashboard">Dashboard</a>
             <br>
             <a class="nav-content" href="/add_new_entry">Add New Entry</a>
@@ -36,9 +37,18 @@
             <a class="nav-content" href="/update_profile">Update Profile</a>
             <br>
             <a class="nav-content signout" href="/logout">Logout</a>
+            {% else %}
+            <a class="nav-content" href="/dashboard">Dashboard</a>
+            <br>
+            <a class="nav-content active" href="/analysis_record">Analysis Record</a>
+            <a class="nav-content" href="/check_record">Check Record</a>
+            <a class="nav-content" href="/update_profile">Update Profile</a>
+            <br>
+            <a class="nav-content signout" href="/logout">Logout</a>
+            {% endif %}
         </div>
         <div class="content">
-            <form action="#" method="post">
+            <form action="/analysis_record" method="post">
                 <div class="inputgroup">
                     <div class="label">
                         No

@@ -1,4 +1,3 @@
-from crypt import methods
 import os
 from tokenize import group
 from app import app, db
@@ -8,6 +7,7 @@ from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, session
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 @app.route('/')
 def home():
@@ -42,11 +42,11 @@ def dashboard():
     if 'super_user' in session:
         users = User.query.all()
         print(users)
-        return render_template('dashboard.html', users=users, length=len(users),super_user=True)
+        return render_template('dashboard.html', users=users, length=len(users), super_user=True)
     elif 'user' in session:
         users = User.query.all()
         print(users)
-        return render_template('dashboard.html', users=users, length=len(users),super_user=False)
+        return render_template('dashboard.html', users=users, length=len(users), super_user=False)
     else:
         return redirect(url_for('login'))
 
@@ -143,15 +143,6 @@ def entry():
         return redirect(url_for('login'))
 
 
-@app.route('/show_record')
-def show_record():
-    if 'super_user' in session:
-        records = Record.query.all()
-        print(records)
-        return render_template('show_record.html', ln=len(records), records=records)
-    else:
-        return redirect(url_for('login'))
-
 
 @app.route('/display_image/<soinik_number>/<date>/<file_name>')
 def display_image(soinik_number, date, file_name):
@@ -159,10 +150,44 @@ def display_image(soinik_number, date, file_name):
     return redirect(url_for('static', filename='uploads/'+soinik_number+'/'+date+'/'+file_name), code=301)
 
 
-@app.route('/analysis_record')
+@app.route('/analysis_record', methods=['GET', 'POST'])
 def calculate_grouping():
     if 'super_user' in session:
-        return render_template('analysis_record.html')
+        if request.method == "POST":
+            soinik_number = request.form.get('soinik_number')
+            from_ = request.form.get('from')
+            to = request.form.get('to')
+            records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
+                Record.date) >= from_, db.func.date(Record.date) <= to).all()
+            print(records)
+            vertical_count = 0
+            horizontal_count = 0
+            total_firing_count = len(records)
+
+            for record in records:
+                if record.error == 'Vertical Error':
+                    vertical_count += 1
+                else:
+                    horizontal_count += 1
+            return render_template('show_record_analysis.html', super_user=True, from_=from_, to=to, soinik_number=soinik_number, vertical_count=vertical_count, horizontal_count=horizontal_count, total_firing_count=total_firing_count)
+        else:
+            return render_template('analysis_record.html', super_user=True)
+    elif 'user' in session:
+        if request.method == 'POST':
+            soinik_number = request.form.get('soinik_number')
+            from_ = request.form.get('from')
+            to = request.form.get('to')
+            records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
+                Record.date) >= from_, db.func.date(Record.date) <= to).all()
+
+            for record in records:
+                if record.error == 'Vertical Error':
+                    vertical_count += 1
+                else:
+                    horizontal_count += 1
+            return render_template('show_record_analysis.html', super_user=False, from_=from_, to=to, soinik_number=soinik_number, vertical_count=vertical_count, horizontal_count=horizontal_count, total_firing_count=total_firing_count)
+        else:
+            return render_template('analysis_record.html', super_user=False)
     else:
         return redirect(url_for('login'))
 
@@ -173,53 +198,43 @@ def analysis_error():
         if request.method == "POST":
             soinik_number = request.form.get('soinik_number')
             date = request.form.get('date')
-            sub_label = request.form.get('sub_label')
-            print(date)
-            record = Record.query.filter_by(soinik_number=soinik_number, date=date.replace(
-                '-', '/'), sub_label=sub_label).all()
+            records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
+                Record.date) == date).all()
 
-            print(record)
-            # grouping = request.form.get('grouping')
-            error = predict('static/uploads/'+soinik_number +
-                            '/'+date+'/' + record[0].file_name)
-            print(error)
-            record[0].error = error
-            record[0].total_hit = 5
-            db.session.add(record[0])
-            db.session.commit()
-            return render_template('check_record.html')
+            print(records)
+            
+            return render_template('show_record.html',super_user=True,ln=len(records),records=records)
         else:
-            return render_template('check_record.html')
+            return render_template('check_record.html',super_user=True)
+
+    elif 'user' in session:
+        if request.method == "POST":
+            soinik_number = request.form.get('soinik_number')
+            date = request.form.get('date')
+            
+            records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
+                Record.date) == date).all()
+
+            print(records)
+            
+            return render_template('show_record.html',super_user=False,ln=len(records),records=records)
+        else:
+            return render_template('check_record.html',super_user=False)
     else:
         return redirect(url_for('login'))
 
-
-@app.route('/report')
-def report():
-    if 'super_user' in session:
-        users = User.query.all()
-        print(users)
-        return render_template('report.html', users=users, length=len(users))
-    else:
-        return redirect(url_for('login'))
 
 
 @app.route('/update_profile')
 def update_profile():
     if 'super_user' in session:
 
-        return render_template('update_profile.html')
+        return render_template('update_profile.html',super_user=True)
+    elif 'user' in session:
+        return render_template('update_profile.html',super_user=False)
     else:
         return redirect(url_for('login'))
 
-
-@app.route('/show_report')
-def show_report():
-    if 'super_user' in session:
-        records = Record.query.all()
-        return render_template('show_report.html', ln=len(records), records=records)
-    else:
-        return redirect(url_for('login'))
 
 
 @app.route('/profile')

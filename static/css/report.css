@@ -109,6 +109,7 @@
     flex-direction: column;
     padding-top: 5%;
     align-items: center;
+    overflow: auto;
 }
 
 .table table td, th {

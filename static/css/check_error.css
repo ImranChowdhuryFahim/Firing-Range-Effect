@@ -14,6 +14,18 @@
     background-color: green;
 }
 
+.nav-content {
+    background-color: rgb(87, 128, 87);
+    padding: 5px;
+    margin: 5px;
+    /* border: 1px solid #000; */
+    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, .3);
+    text-decoration: none;
+    color: black;
+}
+
 .header .pic {
     flex: 1;
 }
