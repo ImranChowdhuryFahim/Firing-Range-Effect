@@ -141,7 +141,7 @@ def entry():
             db.session.commit()
             return render_template('entry.html', soinik_number=session['temp']['soinik_number'], record=new_record)
         else:
-            records = Record.query.all()
+            records = Record.query.filter(Record.soinik_number == session['temp']['soinik_number']).all()
             if len(records) == 0:
                 record = None
             else:
