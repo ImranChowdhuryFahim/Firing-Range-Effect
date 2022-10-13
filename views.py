@@ -25,7 +25,8 @@ def login():
         password = request.form.get('Password')
 
         if id == 'super_admin' and password == '#admin':
-            session['super_user'] = {"name":"super_admin","rank":'snk',"unit":'abcd',"soinik_number":123456}
+            session['super_user'] = {
+                "name": "super_admin", "rank": 'snk', "unit": 'abcd', "soinik_number": 123456}
             return redirect(url_for('dashboard'))
         else:
             user = User.query.get(id)
@@ -138,20 +139,22 @@ def entry():
                                 count+1, file_name, firing_range, grouping, error)
             db.session.add(new_record)
             db.session.commit()
-            return render_template('entry.html', soinik_number=session['temp']['soinik_number'])
+            return render_template('entry.html', soinik_number=session['temp']['soinik_number'], record=new_record)
         else:
-            return render_template('entry.html', soinik_number=session['temp']['soinik_number'])
+            records = Record.query.all()
+            if len(records) == 0:
+                record = None
+            else:
+                record = records[-1]
+            return render_template('entry.html', soinik_number=session['temp']['soinik_number'], record=record)
     else:
         return redirect(url_for('login'))
-
 
 
 @app.route('/display_image/<soinik_number>/<date>/<file_name>')
 def display_image(soinik_number, date, file_name):
     print(soinik_number, date, file_name)
     return redirect(url_for('static', filename='uploads/'+soinik_number+'/'+date+'/'+file_name), code=301)
-
-
 
 
 @app.route('/analysis_record', methods=['GET', 'POST'])
@@ -210,27 +213,26 @@ def analysis_error():
                 Record.date) == date).all()
 
             print(records)
-            
-            return render_template('show_record.html',super_user=True,ln=len(records),records=records)
+
+            return render_template('show_record.html', super_user=True, ln=len(records), records=records)
         else:
-            return render_template('check_record.html',super_user=True)
+            return render_template('check_record.html', super_user=True)
 
     elif 'user' in session:
         if request.method == "POST":
             soinik_number = request.form.get('soinik_number')
             date = request.form.get('date')
-            
+
             records = Record.query.filter(Record.soinik_number == soinik_number, db.func.date(
                 Record.date) == date).all()
 
             print(records)
-            
-            return render_template('show_record.html',super_user=False,ln=len(records),records=records)
+
+            return render_template('show_record.html', super_user=False, ln=len(records), records=records)
         else:
-            return render_template('check_record.html',super_user=False)
+            return render_template('check_record.html', super_user=False)
     else:
         return redirect(url_for('login'))
-
 
 
 @app.route('/update_profile', methods=["GET", "POST"])
@@ -244,7 +246,7 @@ def update_profile():
             image = request.files['file']
             user = User.query.get(soinik_number)
             if user == None:
-                return render_template('update_profile.html',super_user=True,msg="User doesn't exist")
+                return render_template('update_profile.html', super_user=True, msg="User doesn't exist")
 
             else:
                 dir_path = 'static/uploads/profile_photo'
@@ -261,10 +263,10 @@ def update_profile():
                 user.photo = file_name
                 db.session.add(user)
                 db.session.commit()
-                return render_template('update_profile.html',super_user=True,msg="successfully updated profile")
-            
+                return render_template('update_profile.html', super_user=True, msg="successfully updated profile")
+
         else:
-            return render_template('update_profile.html',super_user=True)
+            return render_template('update_profile.html', super_user=True)
     elif 'user' in session:
         if request.method == 'POST':
             soinik_number = request.form.get('soinik_number')
@@ -274,7 +276,7 @@ def update_profile():
             image = request.files['file']
             user = User.query.get(soinik_number)
             if user == None:
-                return render_template('update_profile.html',super_user=False,msg="User doesn't exist")
+                return render_template('update_profile.html', super_user=False, msg="User doesn't exist")
 
             else:
                 dir_path = 'static/uploads/profile_photo'
@@ -291,29 +293,31 @@ def update_profile():
                 user.photo = file_name
                 db.session.add(user)
                 db.session.commit()
-                return render_template('update_profile.html',super_user=False,msg="successfully updated profile")
+                return render_template('update_profile.html', super_user=False, msg="successfully updated profile")
         else:
-            return render_template('update_profile.html',super_user=False)
+            return render_template('update_profile.html', super_user=False)
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/display_picture/<soinik_number>/<file_name>')
-def display_picture(soinik_number,file_name):
+def display_picture(soinik_number, file_name):
     print(soinik_number, file_name)
     return redirect(url_for('static', filename='uploads/profile_photo/'+soinik_number+'/'+file_name), code=301)
+
 
 @app.route('/profile')
 def profile():
     if 'super_user' in session:
-        return render_template('profile.html',super_user=True,user=session['super_user'])
+        return render_template('profile.html', super_user=True, user=session['super_user'])
     elif 'user' in session:
         user = User.query.get(session['user'])
-        return render_template('profile.html',super_user=False,user=user)
+        return render_template('profile.html', super_user=False, user=user)
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/erase_data',methods=['POST'])
+@app.route('/erase_data', methods=['POST'])
 def erase_date():
     if 'super_user' in session:
         if request.method == 'POST':
@@ -325,10 +329,9 @@ def erase_date():
             db.session.commit()
             db.session.execute(sql2)
             db.session.commit()
-            return render_template('update_profile.html',super_user=False,msg="successfully deleted profile")
+            return render_template('update_profile.html', super_user=False, msg="successfully deleted profile")
     else:
         return redirect(url_for('login'))
-
 
 
 @app.route('/logout')

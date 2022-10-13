@@ -39,6 +39,10 @@
         </div>
         <div class="content">
             <form action="/entry" method="post" enctype="multipart/form-data">
+
+                {% if record!=None %}
+                <h5> Result of last entry for No {{ record.soinik_number }}:{{ record.error }} </h5> 
+                {% endif %}
                
                <h5> Give entries for no : {{ soinik_number }} </h5> 
 
